@@ -15,6 +15,8 @@ Maintainer: Miguel Luis and Gregory Cristian
 #ifndef __I2C_MCU_H__
 #define __I2C_MCU_H__
 
+#include "em_gpio.h"
+
 /*!
  * Operation Mode for the I2C
  */
@@ -59,7 +61,8 @@ typedef enum
  * \param [IN] scl  I2C Scl pin name to be used
  * \param [IN] sda  I2C Sda pin name to be used
  */
-void I2cMcuInit( I2c_t *obj, PinNames scl, PinNames sda );
+void I2cMcuInit( I2c_t *obj, uint8_t sclPort, uint8_t sclPin, uint8_t sdaPort, uint8_t sdaPin, uint8_t portLocation );
+
 
 /*!
  * \brief Initializes the I2C object and MCU peripheral
@@ -89,8 +92,8 @@ void I2cMcuDeInit( I2c_t *obj );
  * \param [IN] buffer           data buffer to write
  * \param [IN] size             number of data byte to write
  */
-uint8_t I2cMcuWriteBuffer( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *buffer, uint16_t size );
-
+uint8_t I2cMcuWriteBuffer( I2c_t *obj, uint8_t deviceAddr, uint8_t addr, uint8_t *buffer, uint8_t size );
+// Register address set to 8 bits and method set to "void" in stead of uint8_t.
 /*!
  * \brief Read several data byte from the I2C device
  *
@@ -100,8 +103,8 @@ uint8_t I2cMcuWriteBuffer( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_
  * \param [IN] buffer           data buffer used to store the data read
  * \param [IN] size             number of data byte to read
  */
-uint8_t I2cMcuReadBuffer( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *buffer, uint16_t size );
-
+uint8_t I2cMcuReadBuffer( I2c_t *obj, uint8_t deviceAddr, uint8_t addr, uint8_t *buffer, uint8_t size );
+// Register address set to 8 bits and methode set to "void" in stead of uint8_t.
 /*!
  * \brief Waits until the given device is in standby mode
  *

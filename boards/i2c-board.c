@@ -14,7 +14,10 @@ Maintainer: Miguel Luis and Gregory Cristian
 */
 #include "board.h"
 #include "i2c-board.h"
-
+#include "i2cspm.h"
+#include "gpio.h"
+#include "em_i2c.h"
+#include "hal_i2c.h"
 /*!
  *  The value of the maximal timeout for I2C waiting loops
  */
@@ -32,9 +35,23 @@ typedef enum {
 } I2cName;
 */
 
-void I2cMcuInit( I2c_t *obj, PinNames scl, PinNames sda )
+void I2cMcuInit( I2c_t *obj, uint8_t sclPort, uint8_t sclPin, uint8_t sdaPort, uint8_t sdaPin, uint8_t portLocation )
 {
-	assert_param(FAIL);
+	/* Identify the object */
+	obj->I2c.Instance  = ( I2C_TypeDef * )I2C0_BASE;
+	obj->Scl.pinIndex = sclPin;
+	obj->Scl.portIndex = sclPort;
+	obj->Sda.pinIndex = sdaPin;
+	obj->Sda.portIndex = sclPort;
+
+	/* Enable necessary clocks */
+	CMU_ClockEnable(cmuClock_GPIO,true);
+
+	/* Initialize I2C */
+	HAL_I2CInit(sclPort,sdaPin,sclPin,portLocation);
+
+	/* Deactivate clocks */
+	CMU_ClockEnable(cmuClock_GPIO,false);
 }
 
 void I2cMcuFormat( I2c_t *obj, I2cMode mode, I2cDutyCycle dutyCycle, bool I2cAckEnable, I2cAckAddrMode AckAddrMode, uint32_t I2cFrequency )
@@ -52,20 +69,81 @@ void I2cSetAddrSize( I2c_t *obj, I2cAddrSize addrSize )
     I2cInternalAddrSize = addrSize;
 }
 
-uint8_t I2cMcuWriteBuffer( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *buffer, uint16_t size )
+uint8_t I2cMcuWriteBuffer( I2c_t *obj, uint8_t deviceAddr, uint8_t addr, uint8_t *buffer, uint8_t size )
+// Register address set to 8 bits and methode set to "void"
 {
-	assert_param(FAIL);
-	return FAIL;
+	/* Activate necessary clocks */
+	CMU_ClockEnable(cmuClock_GPIO,true);
+	HAL_I2CEnableClock(cmuClock_I2C0);
+
+	/* Transfer structure */
+	I2C_TransferSeq_TypeDef seq;
+	I2C_TransferReturn_TypeDef ret;
+	uint8_t writeBuf[2] = {addr,*buffer};
+
+	/* Initializing I2C transfer */
+	seq.addr = deviceAddr <<1;
+	seq.flags = I2C_FLAG_WRITE;
+	seq.buf[0].data = writeBuf;
+	seq.buf[0].len = size+1;
+
+	/* Sending data */
+	ret = I2C_TransferInit(I2C0, &seq); // Start I2C Write transaction
+	while(ret == i2cTransferInProgress){
+		ret = I2C_Transfer(I2C0);
+	} // Continue until all data has been sent
+
+	/* Disable clocks */
+	HAL_I2CDisableClock(cmuClock_I2C0);
+	CMU_ClockEnable(cmuClock_GPIO,false);
+
+	return SUCCESS;
+	/*assert_param(FAIL);
+	return FAIL;*/
 }
 
-uint8_t I2cMcuReadBuffer( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *buffer, uint16_t size )
+uint8_t I2cMcuReadBuffer( I2c_t *obj, uint8_t deviceAddr, uint8_t addr, uint8_t *buffer, uint8_t size )
+// Register address set to 8 bits.
 {
+	/* Activate necessary clocks */
+	CMU_ClockEnable(cmuClock_GPIO,true);
+	HAL_I2CEnableClock(cmuClock_I2C0);
+
+	/* Transfer structure */
+	I2C_TransferSeq_TypeDef seq;
+	I2C_TransferReturn_TypeDef ret;
+	uint8_t readBuf [1];
+	readBuf[0] = addr;
+
+	/* Initializing I2C transfer */
+	seq.addr 		= deviceAddr <<1;
+	seq.flags 		= I2C_FLAG_WRITE_READ;
+	seq.buf[0].data = readBuf;
+	seq.buf[0].len 	= 1;
+	seq.buf[1].data = buffer;
+	seq.buf[1].len 	= size;
+
+	/* Sending data */
+
+	ret = I2C_TransferInit(I2C0, &seq); // Start I2C Write transaction
+	while(ret == i2cTransferInProgress){
+		ret = I2C_Transfer(I2C0);
+	} // Continue until all data has been sent
+
+	/* Deactivate clocks */
+	HAL_I2CDisableClock(cmuClock_I2C0);
+	CMU_ClockEnable(cmuClock_GPIO,false);
+
+	return SUCCESS;
+	/*
 	assert_param(FAIL);
-	return FAIL;
+	return FAIL;*/
 }
 
 uint8_t I2cMcuWaitStandbyState( I2c_t *obj, uint8_t deviceAddr )
 {
+
+
 	assert_param(FAIL);
 	return FAIL;
 }

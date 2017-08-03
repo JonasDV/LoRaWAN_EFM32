@@ -12,6 +12,7 @@ License: Revised BSD License, see LICENSE.TXT file include in the project
 
 Maintainer: Miguel Luis and Gregory Cristian
 */
+#include "em_gpio.h"
 #ifndef __I2C_H__
 #define __I2C_H__
 
@@ -32,7 +33,7 @@ typedef struct
  * \param [IN] scl  I2C Scl pin name to be used
  * \param [IN] sda  I2C Sda pin name to be used
  */
-void I2cInit( I2c_t *obj, PinNames scl, PinNames sda );
+void I2cInit( I2c_t *obj, uint8_t sclPort, uint8_t sclPin, uint8_t sdaPort, uint8_t sdaPin, uint8_t portLocation );
 
 /*!
  * \brief DeInitializes the I2C object and MCU peripheral
@@ -56,7 +57,7 @@ void I2cResetBus( I2c_t *obj );
  * \param [IN] addr             data address
  * \param [IN] data             data to write
  */
-uint8_t I2cWrite( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t data );
+uint8_t I2cWrite( I2c_t *obj, uint8_t deviceAddr, uint8_t addr, uint8_t data );
 
 /*!
  * \brief Write several data to the I2C device
@@ -67,7 +68,7 @@ uint8_t I2cWrite( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t data );
  * \param [IN] buffer           data buffer to write
  * \param [IN] size             number of bytes to write
  */
-uint8_t I2cWriteBuffer( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *buffer, uint16_t size );
+uint8_t I2cWriteBuffer( I2c_t *obj, uint8_t deviceAddr, uint8_t addr, uint8_t *buffer, uint8_t size );
 
 /*!
  * \brief Read data from the I2C device
@@ -77,7 +78,7 @@ uint8_t I2cWriteBuffer( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *
  * \param [IN] addr             data address
  * \param [OUT] data            variable used to store the data read
  */
-uint8_t I2cRead( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *data );
+uint8_t I2cRead( I2c_t *obj, uint8_t deviceAddr, uint8_t addr, uint8_t *data );
 
 /*!
  * \brief Read several data byte from the I2C device
@@ -88,6 +89,6 @@ uint8_t I2cRead( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *data );
  * \param [OUT] buffer          data buffer used to store the data read
  * \param [IN] size             number of data byte to read
  */
-uint8_t I2cReadBuffer( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *buffer, uint16_t size );
+uint8_t I2cReadBuffer( I2c_t *obj, uint8_t deviceAddr, uint8_t addr, uint8_t *buffer, uint8_t size );
 
 #endif  // __I2C_H__

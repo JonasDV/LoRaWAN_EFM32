@@ -20,13 +20,13 @@ Maintainer: Miguel Luis and Gregory Cristian
  */
 static bool I2cInitialized = false;
 
-void I2cInit( I2c_t *obj, PinNames scl, PinNames sda )
+void I2cInit( I2c_t *obj, uint8_t sclPort, uint8_t sclPin, uint8_t sdaPort, uint8_t sdaPin, uint8_t portLocation )
 {
     if( I2cInitialized == false )
     {
         I2cInitialized = true;
 
-        I2cMcuInit( obj, scl, sda );
+        I2cMcuInit( obj, sclPort,sclPin,sdaPort, sdaPin, portLocation );
         I2cMcuFormat( obj, MODE_I2C, I2C_DUTY_CYCLE_2, true, I2C_ACK_ADD_7_BIT, 400000 );
     }
 }
@@ -40,10 +40,10 @@ void I2cDeInit( I2c_t *obj )
 void I2cResetBus( I2c_t *obj )
 {
     I2cInitialized = false;
-    I2cInit( obj, I2C_SCL, I2C_SDA );
+    //I2cInit( obj, I2C_SCL, I2C_SDA );
 }
 
-uint8_t I2cWrite( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t data )
+uint8_t I2cWrite( I2c_t *obj, uint8_t deviceAddr, uint8_t addr, uint8_t data )
 {
     if( I2cInitialized == true )
     {
@@ -70,7 +70,7 @@ uint8_t I2cWrite( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t data )
     }
 }
 
-uint8_t I2cWriteBuffer( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *buffer, uint16_t size )
+uint8_t I2cWriteBuffer( I2c_t *obj, uint8_t deviceAddr, uint8_t addr, uint8_t *buffer, uint8_t size )
 {
     if( I2cInitialized == true )
     {
@@ -97,7 +97,7 @@ uint8_t I2cWriteBuffer( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *
     }
 }
 
-uint8_t I2cRead( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *data )
+uint8_t I2cRead( I2c_t *obj, uint8_t deviceAddr, uint8_t addr, uint8_t *data )
 {
     if( I2cInitialized == true )
     {
@@ -109,7 +109,7 @@ uint8_t I2cRead( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *data )
     }
 }
 
-uint8_t I2cReadBuffer( I2c_t *obj, uint8_t deviceAddr, uint16_t addr, uint8_t *buffer, uint16_t size )
+uint8_t I2cReadBuffer( I2c_t *obj, uint8_t deviceAddr, uint8_t addr, uint8_t *buffer, uint8_t size )
 {
     if( I2cInitialized == true )
     {

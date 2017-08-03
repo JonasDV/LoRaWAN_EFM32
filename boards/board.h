@@ -88,10 +88,8 @@ typedef struct
 #define BUTTON_0									PC_9
 #define BUTTON_1									PC_10
 
-#define I2C_SCL                                     NC
-#define I2C_SDA                                     NC
-
-
+#define I2C_SCL                                NC
+#define I2C_SDA                                NC
 
 
 /*!

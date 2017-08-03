@@ -5,6 +5,9 @@
 #include "board.h"
 
 #include "LoRaMac.h"
+#include "i2c-board.h"
+
+#include "em_cmu.h"
 
 #define APP_TX_DUTYCYCLE                    15000   // Milliseconds between two transmissions
 #define APP_TX_DUTYCYCLE_RND                1000    // Random delay for application data transmission duty cycle [ms]
@@ -138,8 +141,27 @@ static void MlmeConfirm(MlmeConfirm_t *mlmeConfirm)
 //{
 //}
 
+#define ADDR 0x29
+#define ADDR_ID_REG	0x92
+
 int main( void )
 {
+	I2cMcuInit(&I2c, gpioPortD,7,gpioPortD,6,1);
+	uint8_t ID_Value =0;
+
+
+
+
+	I2cMcuReadBuffer(&I2c,0x29,0x92,&ID_Value,1);
+	uint8_t buffer1 = 0x00;
+	uint8_t buffer2 = 0xD5;
+	uint8_t buffer3 = 0x10;
+	I2cMcuWriteBuffer(&I2c,0x29,0x8F,&buffer1,1);
+	I2cMcuWriteBuffer(&I2c,0x29,0x81,&buffer2,1);
+	I2cMcuWriteBuffer(&I2c,0x29,0x80,&buffer3,1);
+
+	while(1);
+	/*
     LoRaMacPrimitives_t LoRaMacPrimitives;
     LoRaMacCallback_t LoRaMacCallbacks;
     MibRequestConfirm_t mibReq;
@@ -263,7 +285,7 @@ int main( void )
                 break;
             }
         }
-    }
+    } */
 }
 
 // This function is called when PB0 is pressed
